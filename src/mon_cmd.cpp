@@ -545,7 +545,7 @@ static void disassemble(CPUType type)
 		case CPU_PPC:
 			while (adr <= end_adr && !mon_aborted()) {
 				uint32_t w = mon_read_word(adr);
-				fprintf(monout, "%0*lx: %08x\t", int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? adr : adr % mon_mem_size, w));
+				fprintf(monout, "%0*lx: %08x\t", int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? adr : adr % mon_mem_size), w);
 				disass_ppc(monout, mon_use_real_mem ? adr : adr % mon_mem_size, w);
 				adr += 4;
 			}
