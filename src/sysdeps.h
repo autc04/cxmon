@@ -18,6 +18,27 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#pragma once
+
+#include <stdint.h>
+#include <string.h>
+# include <unistd.h>
+
+typedef uint8_t uint8;
+typedef int8_t int8;
+typedef uint16_t uint16;
+typedef int16_t int16;
+typedef uint32_t uint32;
+typedef int32_t int32;
+typedef uint64_t uint64;
+typedef int64_t int64;
+
+typedef uint64_t uintptr;
+
+#define VAL64(a) (a)
+#define UVAL64(a) (a)
+
+#if 0
 #ifndef SYSDEPS_H
 #define SYSDEPS_H
 
@@ -93,4 +114,5 @@ typedef int64 intptr;
 
 #endif	// def __BEOS__
 
+#endif
 #endif
