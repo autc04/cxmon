@@ -12,7 +12,6 @@ add_library(mon
     src/mon_lowmem.cpp
     src/mon_ppc.cpp
     src/mon_z80.cpp
-    src/sysdeps.h
     
     src/disass/bfd.h
     src/disass/ansidecl.h
@@ -29,6 +28,7 @@ add_library(mon
 
 find_path(Readline_INCLUDE_DIR NAMES readline/readline.h)
 find_library(Readline_LIBRARY NAMES readline)
+target_compile_definitions(mon PRIVATE NO_AUTOCONF)
 
 if(Readline_INCLUDE_DIR AND Readline_LIBRARY)
     target_compile_definitions(mon PRIVATE

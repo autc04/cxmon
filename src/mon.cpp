@@ -27,6 +27,10 @@
 #include <sstream>
 #include <unistd.h>
 
+#ifndef NO_AUTOCONF
+#include "config.h"
+#endif
+
 #if defined(HAVE_READLINE_H)
 extern "C" {
 #include <readline.h>
