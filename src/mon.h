@@ -23,7 +23,9 @@
 
 #include <stdio.h>
 #include <set>
+#include <stdint.h>
 
+typedef uint32_t mon_addr_t;
 
 /*
  *  Initialization, deinitialization and invocation

@@ -21,6 +21,8 @@
 #ifndef MON_LOWMEM_H
 #define MON_LOWMEM_H
 
+#include <stdint.h>
+
 struct lowmem_info {
 	const char *name;
 	uint16_t addr;

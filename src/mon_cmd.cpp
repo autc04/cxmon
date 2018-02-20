@@ -18,10 +18,9 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "sysdeps.h"
-
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 #include "mon.h"
 #include "mon_cmd.h"

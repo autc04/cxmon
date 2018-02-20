@@ -26,7 +26,6 @@ add_library(mon
     src/disass/opintl.h
     )
 
-target_include_directories(mon PRIVATE src)
 
 find_path(Readline_INCLUDE_DIR NAMES readline/readline.h)
 find_library(Readline_LIBRARY NAMES readline)

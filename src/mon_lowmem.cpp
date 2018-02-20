@@ -18,9 +18,9 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "sysdeps.h"
-
 #include "mon_lowmem.h"
+
+#include <stdlib.h>
 
 // Array of low memory globals in ascending order
 const lowmem_info lowmem[] = {
