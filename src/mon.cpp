@@ -75,7 +75,7 @@ static char *in_ptr;
 char *mon_args_ptr;
 
 // Current address, value of '.' in expressions
-uintptr mon_dot_address;
+mon_addr_t mon_dot_address;
 
 // Current value of ':' in expression
 static uint32 colon_value;
@@ -83,7 +83,7 @@ static uint32 colon_value;
 
 // Scanner variables
 enum Token mon_token;  // Last token read
-uintptr mon_number;    // Contains the number if mon_token==T_NUMBER
+mon_addr_t mon_number;    // Contains the number if mon_token==T_NUMBER
 char *mon_string;      // Contains the string if mon_token==T_STRING
 char *mon_name;        // Contains the variable name if mon_token==T_NAME
 
@@ -100,7 +100,7 @@ static char *cmd_help;  // Help text for commands
 
 
 // List of variables
-typedef std::map<std::string, uintptr> var_map;
+typedef std::map<std::string, mon_addr_t> var_map;
 static var_map vars;
 
 
@@ -111,18 +111,18 @@ static void exit_abort();
 static void read_line(char *prompt);		// Scanner
 static char get_char();
 static void put_back(char c);
-static enum Token get_hex_number(uintptr &i);
-static enum Token get_dec_number(uintptr &i);
-static enum Token get_char_number(uintptr &i);
+static enum Token get_hex_number(mon_addr_t &i);
+static enum Token get_dec_number(mon_addr_t &i);
+static enum Token get_char_number(mon_addr_t &i);
 static enum Token get_string(char *&str);
-static enum Token get_hex_or_name(uintptr &i, char *&name);
+static enum Token get_hex_or_name(mon_addr_t &i, char *&name);
 
-static bool eor_expr(uintptr *number);	// Parser
-static bool and_expr(uintptr *number);
-static bool shift_expr(uintptr *number);
-static bool add_expr(uintptr *number);
-static bool mul_expr(uintptr *number);
-static bool factor(uintptr *number);
+static bool eor_expr(mon_addr_t *number);	// Parser
+static bool and_expr(mon_addr_t *number);
+static bool shift_expr(mon_addr_t *number);
+static bool add_expr(mon_addr_t *number);
+static bool mul_expr(mon_addr_t *number);
+static bool factor(mon_addr_t *number);
 
 
 /*
@@ -206,47 +206,47 @@ bool mon_aborted()
  *  Access to buffer
  */
 
-uint32 (*mon_read_byte)(uintptr adr);
+uint32 (*mon_read_byte)(mon_addr_t adr);
 
-uint32 mon_read_byte_buffer(uintptr adr)
+uint32 mon_read_byte_buffer(mon_addr_t adr)
 {
 	return mem[adr % mon_mem_size];
 }
 
-uint32 mon_read_byte_real(uintptr adr)
+uint32 mon_read_byte_real(mon_addr_t adr)
 {
 	return *(uint8 *)adr;
 }
 
-void (*mon_write_byte)(uintptr adr, uint32 b);
+void (*mon_write_byte)(mon_addr_t adr, uint32 b);
 
-void mon_write_byte_buffer(uintptr adr, uint32 b)
+void mon_write_byte_buffer(mon_addr_t adr, uint32 b)
 {
 	mem[adr % mon_mem_size] = b;
 }
 
-void mon_write_byte_real(uintptr adr, uint32 b)
+void mon_write_byte_real(mon_addr_t adr, uint32 b)
 {
 	*(uint8 *)adr = b;
 }
 
-uint32 mon_read_half(uintptr adr)
+uint32 mon_read_half(mon_addr_t adr)
 {
 	return (mon_read_byte(adr) << 8) | mon_read_byte(adr+1);
 }
 
-void mon_write_half(uintptr adr, uint32 w)
+void mon_write_half(mon_addr_t adr, uint32 w)
 {
 	mon_write_byte(adr, w >> 8);
 	mon_write_byte(adr+1, w);
 }
 
-uint32 mon_read_word(uintptr adr)
+uint32 mon_read_word(mon_addr_t adr)
 {
 	return (mon_read_byte(adr) << 24) | (mon_read_byte(adr+1) << 16) | (mon_read_byte(adr+2) << 8) | mon_read_byte(adr+3);
 }
 
-void mon_write_word(uintptr adr, uint32 l)
+void mon_write_word(mon_addr_t adr, uint32 l)
 {
 	mon_write_byte(adr, l >> 24);
 	mon_write_byte(adr+1, l >> 16);
@@ -395,7 +395,7 @@ enum Token mon_get_token()
 	}
 }
 
-static enum Token get_hex_number(uintptr &i)
+static enum Token get_hex_number(mon_addr_t &i)
 {
 	char c = get_char();
 
@@ -420,7 +420,7 @@ static enum Token get_hex_number(uintptr &i)
 	}
 }
 
-static enum Token get_dec_number(uintptr &i)
+static enum Token get_dec_number(mon_addr_t &i)
 {
 	char c = get_char();
 
@@ -441,7 +441,7 @@ static enum Token get_dec_number(uintptr &i)
 	}
 }
 
-static enum Token get_char_number(uintptr &i)
+static enum Token get_char_number(mon_addr_t &i)
 {
 	char c;
 
@@ -487,7 +487,7 @@ static enum Token get_string(char *&str)
 	return T_STRING;
 }
 
-static enum Token get_hex_or_name(uintptr &i, char *&name)
+static enum Token get_hex_or_name(mon_addr_t &i, char *&name)
 {
 	// Remember start of token
 	char *old_in_ptr = in_ptr;
@@ -523,9 +523,9 @@ static enum Token get_hex_or_name(uintptr &i, char *&name)
  *  true: OK, false: Error
  */
 
-bool mon_expression(uintptr *number)
+bool mon_expression(mon_addr_t *number)
 {
-	uintptr accu, expr;
+	mon_addr_t accu, expr;
 
 	if (!eor_expr(&accu))
 		return false;
@@ -551,9 +551,9 @@ bool mon_expression(uintptr *number)
  *  true: OK, false: Error
  */
 
-static bool eor_expr(uintptr *number)
+static bool eor_expr(mon_addr_t *number)
 {
-	uintptr accu, expr;
+	mon_addr_t accu, expr;
 
 	if (!and_expr(&accu))
 		return false;
@@ -579,9 +579,9 @@ static bool eor_expr(uintptr *number)
  *  true: OK, false: Error
  */
 
-static bool and_expr(uintptr *number)
+static bool and_expr(mon_addr_t *number)
 {
-	uintptr accu, expr;
+	mon_addr_t accu, expr;
 
 	if (!shift_expr(&accu))
 		return false;
@@ -607,9 +607,9 @@ static bool and_expr(uintptr *number)
  *  true: OK, false: Error
  */
 
-static bool shift_expr(uintptr *number)
+static bool shift_expr(mon_addr_t *number)
 {
-	uintptr accu, expr;
+	mon_addr_t accu, expr;
 
 	if (!add_expr(&accu))
 		return false;
@@ -642,9 +642,9 @@ static bool shift_expr(uintptr *number)
  *  true: OK, false: Error
  */
 
-static bool add_expr(uintptr *number)
+static bool add_expr(mon_addr_t *number)
 {
-	uintptr accu, expr;
+	mon_addr_t accu, expr;
 
 	if (!mul_expr(&accu))
 		return false;
@@ -677,9 +677,9 @@ static bool add_expr(uintptr *number)
  *  true: OK, false: Error
  */
 
-static bool mul_expr(uintptr *number)
+static bool mul_expr(mon_addr_t *number)
 {
-	uintptr accu, fact;
+	mon_addr_t accu, fact;
 
 	if (!factor(&accu))
 		return false;
@@ -727,7 +727,7 @@ static bool mul_expr(uintptr *number)
  *  true: OK, false: Error
  */
 
-static bool factor(uintptr *number)
+static bool factor(mon_addr_t *number)
 {
 	switch (mon_token) {
 		case T_NUMBER:
@@ -826,7 +826,7 @@ static void set_var()
 		if (mon_token == T_ASSIGN) {
 
 			// Set variable
-			uintptr value;
+			mon_addr_t value;
 			mon_get_token();
 			if (!mon_expression(&value))
 				return;
@@ -896,7 +896,7 @@ static void mon_cmd_list()
 
 static void reallocate()
 {
-	uintptr size;
+	mon_addr_t size;
 
 	if (mon_use_real_mem) {
 		fprintf(monerr, "Cannot reallocate buffer in real mode\n");
@@ -929,7 +929,7 @@ static void reallocate()
 
 static void apply(int size)
 {
-	uintptr adr, end_adr, value;
+	mon_addr_t adr, end_adr, value;
 	char c;
 
 	if (!mon_expression(&adr))
@@ -943,8 +943,8 @@ static void apply(int size)
 		return;
 	}
 
-	uint32 (*read_func)(uintptr adr);
-	void (*write_func)(uintptr adr, uint32 val);
+	uint32 (*read_func)(mon_addr_t adr);
+	void (*write_func)(mon_addr_t adr, uint32 val);
 	switch (size) {
 		case 1:
 			read_func = mon_read_byte;
@@ -1034,7 +1034,7 @@ void mon_change_dir()
  * Add break point
  */
 
-void mon_add_break_point(uintptr addr)
+void mon_add_break_point(mon_addr_t addr)
 {
 	BREAK_POINT_SET::iterator it = disabled_break_points.find(addr);
 	// Save break point
@@ -1073,7 +1073,7 @@ void mon_load_break_point(const char* file_path)
 			is_disabled_break_points = true;
 			continue;
 		}
-		uintptr address;
+		mon_addr_t address;
 		std::stringstream ss;
 		ss << std::hex << line_buff;
 		ss >> address;

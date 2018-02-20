@@ -41,7 +41,7 @@
  *  true: OK, false: Error
  */
 
-static bool range_args(uintptr *adr, uintptr *end_adr, uint32 def_range)
+static bool range_args(mon_addr_t *adr, mon_addr_t *end_adr, uint32 def_range)
 {
 	*adr = mon_dot_address;
 	*end_adr = mon_dot_address + def_range;
@@ -68,9 +68,9 @@ static bool range_args(uintptr *adr, uintptr *end_adr, uint32 def_range)
  *  byte_string = (expression | STRING) {COMMA (expression | STRING)} END
  */
 
-static bool byte_string(uint8 *&str, uintptr &len)
+static bool byte_string(uint8 *&str, mon_addr_t &len)
 {
-	uintptr value;
+	mon_addr_t value;
 
 	static const int GRANULARITY = 16; // must be a power of 2
 	str = NULL;
@@ -172,7 +172,7 @@ void redir_output(void)
 
 void print_expr(void)
 {
-	uintptr val;
+	mon_addr_t val;
 
 	if (!mon_expression(&val))
 		return;
@@ -224,7 +224,7 @@ void shell_command(void)
 
 void memory_dump(void)
 {
-	uintptr adr, end_adr;
+	mon_addr_t adr, end_adr;
 	uint8 mem[MEMDUMP_BPL + 1];
 
 	mem[MEMDUMP_BPL] = 0;
@@ -255,7 +255,7 @@ void memory_dump(void)
 
 void ascii_dump(void)
 {
-	uintptr adr, end_adr;
+	mon_addr_t adr, end_adr;
 	uint8 str[ASCIIDUMP_BPL + 1];
 
 	str[ASCIIDUMP_BPL] = 0;
@@ -281,7 +281,7 @@ void ascii_dump(void)
 
 void binary_dump(void)
 {
-	uintptr adr, end_adr;
+	mon_addr_t adr, end_adr;
 	uint8 str[9];
 
 	str[8] = 0;
@@ -307,7 +307,7 @@ void binary_dump(void)
  */
 void break_point_add(void)
 {
-	uintptr address;
+	mon_addr_t address;
 
 	if (mon_token == T_END || !mon_expression(&address)) {
 		mon_error("Expect break point in hexadecimal.");
@@ -323,7 +323,7 @@ void break_point_add(void)
 }
 
 
-bool validate_index(uintptr *index_ptr, const BREAK_POINT_SET& break_point_set)
+bool validate_index(mon_addr_t *index_ptr, const BREAK_POINT_SET& break_point_set)
 {
 	if (mon_token == T_END || !mon_expression(index_ptr)) {
 		mon_error("Expect index number of break point in hexadecimal.\n");
@@ -349,7 +349,7 @@ bool validate_index(uintptr *index_ptr, const BREAK_POINT_SET& break_point_set)
  */
 void break_point_remove(void)
 {
-	uintptr index;
+	mon_addr_t index;
 
 	if (!validate_index(&index, active_break_points))
 		return;
@@ -373,7 +373,7 @@ void break_point_remove(void)
  */
 void break_point_disable(void)
 {
-	uintptr index;
+	mon_addr_t index;
 
 	if (!validate_index(&index, active_break_points))
 		return;
@@ -401,7 +401,7 @@ void break_point_disable(void)
  */
 void break_point_enable(void)
 {
-	uintptr index;
+	mon_addr_t index;
 
 	if (!validate_index(&index, disabled_break_points))
 		return;
@@ -537,7 +537,7 @@ enum CPUType {
 
 static void disassemble(CPUType type)
 {
-	uintptr adr, end_adr;
+	mon_addr_t adr, end_adr;
 
 	if (!range_args(&adr, &end_adr, 16 * 4 - 1))  // 16 lines unless end address specified
 		return;
@@ -643,7 +643,7 @@ void disassemble_x86_64(void)
 
 void modify(void)
 {
-	uintptr adr, len, src_adr = 0;
+	mon_addr_t adr, len, src_adr = 0;
 	uint8 *str;
 
 	if (!mon_expression(&adr))
@@ -666,7 +666,7 @@ void modify(void)
 
 void fill(void)
 {
-	uintptr adr, end_adr, len, src_adr = 0;
+	mon_addr_t adr, end_adr, len, src_adr = 0;
 	uint8 *str;
 
 	if (!mon_expression(&adr))
@@ -690,7 +690,7 @@ void fill(void)
 
 void transfer(void)
 {
-	uintptr adr, end_adr, dest;
+	mon_addr_t adr, end_adr, dest;
 	int num;
 
 	if (!mon_expression(&adr))
@@ -724,7 +724,7 @@ void transfer(void)
 
 void compare(void)
 {
-	uintptr adr, end_adr, dest;
+	mon_addr_t adr, end_adr, dest;
 	int num = 0;
 
 	if (!mon_expression(&adr))
@@ -761,7 +761,7 @@ void compare(void)
 
 void hunt(void)
 {
-	uintptr adr, end_adr, len;
+	mon_addr_t adr, end_adr, len;
 	uint8 *str;
 	int num = 0;
 
@@ -805,7 +805,7 @@ void hunt(void)
 
 void load_data(void)
 {
-	uintptr start_adr;
+	mon_addr_t start_adr;
 	FILE *file;
 	int fc;
 
@@ -828,7 +828,7 @@ void load_data(void)
 	if (!(file = fopen(mon_string, "rb")))
 		mon_error("Unable to open file");
 	else {
-		uintptr adr = start_adr;
+		mon_addr_t adr = start_adr;
 
 		while ((fc = fgetc(file)) != EOF)
 			mon_write_byte(adr++, fc);
@@ -847,7 +847,7 @@ void load_data(void)
 
 void save_data(void)
 {
-	uintptr start_adr, size;
+	mon_addr_t start_adr, size;
 	FILE *file;
 
 	if (!mon_expression(&start_adr))
@@ -871,7 +871,7 @@ void save_data(void)
 	if (!(file = fopen(mon_string, "wb")))
 		mon_error("Unable to create file");
 	else {
-		uintptr adr = start_adr, end_adr = start_adr + size - 1;
+		mon_addr_t adr = start_adr, end_adr = start_adr + size - 1;
 
 		while (adr <= end_adr)
 			fputc(mon_read_byte(adr++), file);

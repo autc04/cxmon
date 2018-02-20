@@ -69,7 +69,7 @@ enum Token {
 
 // Scanner variables
 extern enum Token mon_token;  // Last token read
-extern uintptr mon_number;    // Contains the number if mon_token==T_NUMBER
+extern mon_addr_t mon_number;    // Contains the number if mon_token==T_NUMBER
 extern char *mon_string;      // Contains the string if mon_token==T_STRING
 extern char *mon_name;        // Contains the variable name if mon_token==T_NAME
 
@@ -77,14 +77,14 @@ extern char *mon_name;        // Contains the variable name if mon_token==T_NAME
 extern FILE *monin, *monout, *monerr;
 
 // Current address, value of '.' in expressions
-extern uintptr mon_dot_address;
+extern mon_addr_t mon_dot_address;
 
 extern bool mon_use_real_mem;  // Flag: mon is using real memory
 extern uint32 mon_mem_size;    // Size of mon buffer (if mon_use_real_mem = false)
 
 extern bool mon_macos_mode;    // Flag: enable features in the disassembler for working with MacOS code
 
-typedef std::set<uintptr> BREAK_POINT_SET;
+typedef std::set<mon_addr_t> BREAK_POINT_SET;
 extern BREAK_POINT_SET active_break_points;
 extern BREAK_POINT_SET disabled_break_points;
 
@@ -94,21 +94,21 @@ extern void mon_add_command(const char *name, void (*func)(), const char *help_t
 // Functions for commands
 extern void mon_error(const char *s);         // Print error message
 extern enum Token mon_get_token();            // Get next token
-extern bool mon_expression(uintptr *number);  // Parse expression
+extern bool mon_expression(mon_addr_t *number);  // Parse expression
 extern bool mon_aborted();                    // Check if Ctrl-C was pressed
 
 // Memory access
-extern uint32 (*mon_read_byte)(uintptr adr);
-extern void (*mon_write_byte)(uintptr adr, uint32 b);
-extern uint32 mon_read_half(uintptr adr);
-extern void mon_write_half(uintptr adr, uint32 w);
-extern uint32 mon_read_word(uintptr adr);
-extern void mon_write_word(uintptr adr, uint32 l);
+extern uint32 (*mon_read_byte)(mon_addr_t adr);
+extern void (*mon_write_byte)(mon_addr_t adr, uint32 b);
+extern uint32 mon_read_half(mon_addr_t adr);
+extern void mon_write_half(mon_addr_t adr, uint32 w);
+extern uint32 mon_read_word(mon_addr_t adr);
+extern void mon_write_word(mon_addr_t adr, uint32 l);
 
 // Check if break point is set
 #define IS_BREAK_POINT(address) (active_break_points.find(address) != active_break_points.end())
 // Add break point
-extern void mon_add_break_point(uintptr addr);
+extern void mon_add_break_point(mon_addr_t addr);
 extern void mon_load_break_point(const char* file_path);
 
 #endif
