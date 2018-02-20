@@ -37,8 +37,8 @@ typedef struct symbol_cache_entry {
 	CONST char *name;
 } asymbol;
 
-typedef uint64 bfd_vma;
-typedef int64 bfd_signed_vma;
+typedef uint64_t bfd_vma;
+typedef int64_t bfd_signed_vma;
 typedef unsigned char bfd_byte;
 
 typedef struct _bfd bfd;

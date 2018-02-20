@@ -185,7 +185,7 @@ static const char *reg_name_16[] = {"bc", "de", "hl", "sp"};
 static const char *reg_name_16_2[] = {"bc", "de", "hl", "af"};
 static const char *cond_name[] = {"nz", "z", "nc", "c", "po", "pe", "p", "m"};
 
-static void operand(SFILE *f, char mode, uint32 &adr, uint8 op, bool ix, bool iy)
+static void operand(SFILE *f, char mode, uint32_t &adr, uint8_t op, bool ix, bool iy)
 {
 	switch (mode) {
 		case A_IMPL:
@@ -208,7 +208,7 @@ static void operand(SFILE *f, char mode, uint32 &adr, uint8 op, bool ix, bool iy
 			break;
 
 		case A_REL:
-			mon_sprintf(f, "$%04x", (adr + 1 + (int8)mon_read_byte(adr)) & 0xffff); adr++;
+			mon_sprintf(f, "$%04x", (adr + 1 + (int8_t)mon_read_byte(adr)) & 0xffff); adr++;
 			break;
 
 		case A_A:
@@ -333,9 +333,9 @@ static void operand(SFILE *f, char mode, uint32 &adr, uint8 op, bool ix, bool iy
 	}
 }
 
-static int print_instr(SFILE *f, Mnemonic mnem, AddrMode dst_mode, AddrMode src_mode, uint32 adr, uint8 op, bool ix, bool iy)
+static int print_instr(SFILE *f, Mnemonic mnem, AddrMode dst_mode, AddrMode src_mode, uint32_t adr, uint8_t op, bool ix, bool iy)
 {
-	uint32 orig_adr = adr;
+	uint32_t orig_adr = adr;
 
 	// Print mnemonic
 	mon_sprintf(f, "%c%c%c%c ", mnem_1[mnem], mnem_2[mnem], mnem_3[mnem], mnem_4[mnem]);
@@ -351,12 +351,12 @@ static int print_instr(SFILE *f, Mnemonic mnem, AddrMode dst_mode, AddrMode src_
 	return adr - orig_adr;
 }
 
-static int disass_cb(SFILE *f, uint32 adr, bool ix, bool iy)
+static int disass_cb(SFILE *f, uint32_t adr, bool ix, bool iy)
 {
 	int num;
 
 	// Fetch opcode
-	uint8 op;
+	uint8_t op;
 	if (ix || iy) {
 		op = mon_read_byte(adr + 1);
 		num = 2;
@@ -419,10 +419,10 @@ static int disass_cb(SFILE *f, uint32 adr, bool ix, bool iy)
 	return num;
 }
 
-static int disass_ed(SFILE *f, uint32 adr)
+static int disass_ed(SFILE *f, uint32_t adr)
 {
 	// Fetch opcode
-	uint8 op = mon_read_byte(adr);
+	uint8_t op = mon_read_byte(adr);
 
 	// Decode mnemonic and addressing modes
 	Mnemonic mnem;
@@ -562,16 +562,16 @@ static int disass_ed(SFILE *f, uint32 adr)
 	return print_instr(f, mnem, dst_mode, src_mode, adr + 1, op, false, false) + 1;
 }
 
-static int disass(SFILE *f, uint32 adr, bool ix, bool iy)
+static int disass(SFILE *f, uint32_t adr, bool ix, bool iy)
 {
-	uint8 op = mon_read_byte(adr);
+	uint8_t op = mon_read_byte(adr);
 	if (op == 0xcb)
 		return disass_cb(f, adr + 1, ix, iy) + 1;
 	else
 		return print_instr(f, mnemonic[op], AddrMode(adr_mode[op] >> 8), AddrMode(adr_mode[op] & 0xff), adr + 1, op, ix, iy) + 1;
 }
 
-int disass_z80(FILE *f, uint32 adr)
+int disass_z80(FILE *f, uint32_t adr)
 {
 	int num;
 	char buf[64];

@@ -22,9 +22,9 @@
 #define MON_DISASS_H
 
 extern void disass_ppc(FILE *f, unsigned int adr, unsigned int w);
-extern int disass_68k(FILE *f, uint32 adr);
-extern int disass_x86(FILE *f, uint32 adr, uint32 bits = 32);
-extern int disass_6502(FILE *f, uint32 adr, uint8 op, uint8 lo, uint8 hi);
-extern int disass_z80(FILE *f, uint32 adr);
+extern int disass_68k(FILE *f, uint32_t adr);
+extern int disass_x86(FILE *f, uint32_t adr, uint32_t bits = 32);
+extern int disass_6502(FILE *f, uint32_t adr, uint8_t op, uint8_t lo, uint8_t hi);
+extern int disass_z80(FILE *f, uint32_t adr);
 
 #endif

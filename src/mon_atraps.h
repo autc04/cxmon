@@ -23,7 +23,7 @@
 
 struct atrap_info {
 	const char *name;
-	uint16 word;
+	uint16_t word;
 };
 
 // A-Traps in ascending order

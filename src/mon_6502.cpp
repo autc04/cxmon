@@ -144,7 +144,7 @@ static const int adr_length[] = {1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 2, 2};
  *  Disassemble one instruction, return number of bytes
  */
 
-int disass_6502(FILE *f, uint32 adr, uint8 op, uint8 lo, uint8 hi)
+int disass_6502(FILE *f, uint32_t adr, uint8_t op, uint8_t lo, uint8_t hi)
 {
 	AddrMode mode = adr_mode[op];
 	Mnemonic mnem = mnemonic[op];
@@ -187,7 +187,7 @@ int disass_6502(FILE *f, uint32 adr, uint8 op, uint8 lo, uint8 hi)
 			break;
 
 		case A_REL:
-			fprintf(f, "$%04x", (adr + 2) + (int8)lo);
+			fprintf(f, "$%04x", (adr + 2) + (int8_t)lo);
 			break;
 
 		case A_ZERO:

@@ -59,8 +59,8 @@ void generic_print_address(bfd_vma addr, struct disassemble_info *info)
 	if (lookup_lowmem && addr >= 0x100 && addr < 0x3000) {
 		if (((addr >= 0x400 && addr < 0x800) || (addr >= 0xe00 && addr < 0x1e00)) && ((addr & 3) == 0)) {
 			// Look for address in A-Trap table
-			uint16 opcode = (addr < 0xe00 ? 0xa000 + (addr - 0x400) / 4 : 0xa800 + (addr - 0xe00) / 4);
-			uint16 mask = (addr < 0xe00 ? 0xf8ff : 0xffff);
+			uint16_t opcode = (addr < 0xe00 ? 0xa000 + (addr - 0x400) / 4 : 0xa800 + (addr - 0xe00) / 4);
+			uint16_t mask = (addr < 0xe00 ? 0xf8ff : 0xffff);
 			const atrap_info *p = atraps;
 			while (p->word) {
 				if ((p->word & mask) == opcode) {
@@ -84,10 +84,10 @@ void generic_print_address(bfd_vma addr, struct disassemble_info *info)
 			}
 		}
 	}
-	if (addr >= UVAL64(0x100000000))
-		info->fprintf_func(info->stream, "$%08x%08x", (uint32)(addr >> 32), (uint32)addr);
+	if (addr >= 0x100000000)
+		info->fprintf_func(info->stream, "$%08x%08x", (uint32_t)(addr >> 32), (uint32_t)addr);
 	else
-		info->fprintf_func(info->stream, "$%08x", (uint32)addr);
+		info->fprintf_func(info->stream, "$%08x", (uint32_t)addr);
 }
 
 int generic_symbol_at_address(bfd_vma addr, struct disassemble_info *info)
@@ -139,7 +139,7 @@ static int mon_sprintf(SFILE *f, const char *format, ...)
  *  Disassemble one instruction, return number of bytes
  */
 
-int disass_68k(FILE *f, uint32 adr)
+int disass_68k(FILE *f, uint32_t adr)
 {
 	// Initialize info for GDB disassembler
 	disassemble_info info;
@@ -169,7 +169,7 @@ int disass_68k(FILE *f, uint32 adr)
 	return num;
 }
 
-int disass_x86(FILE *f, uint32 adr, uint32 bits)
+int disass_x86(FILE *f, uint32_t adr, uint32_t bits)
 {
 	// Initialize info for GDB disassembler
 	disassemble_info info;

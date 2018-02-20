@@ -23,7 +23,7 @@
 
 struct lowmem_info {
 	const char *name;
-	uint16 addr;
+	uint16_t addr;
 };
 
 // Array of low memory globals in ascending order

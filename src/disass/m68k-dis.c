@@ -1212,7 +1212,7 @@ print_indexed (basereg, p, addr, info)
       buf[0] = '\0';
     }
   if (outer_disp)
-    (*info->fprintf_func) (info->stream, "],$%08x", (uint32)outer_disp);
+    (*info->fprintf_func) (info->stream, "],$%08x", (uint32_t)outer_disp);
   else
     (*info->fprintf_func) (info->stream, "]");
   if (buf[0] != '\0')
@@ -1243,6 +1243,6 @@ print_base (regno, disp, info)
 		else if (regno == -2)
 			(*info->print_address_func) (disp, info);
 		else
-			(*info->fprintf_func) (info->stream, "$%08x,%s", (uint32)disp, reg_names[regno]);
+			(*info->fprintf_func) (info->stream, "$%08x,%s", (uint32_t)disp, reg_names[regno]);
 	}
 }

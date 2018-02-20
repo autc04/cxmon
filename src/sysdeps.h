@@ -18,101 +18,12 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#pragma once
-
-#include <stdint.h>
-#include <string.h>
-# include <unistd.h>
-
-typedef uint8_t uint8;
-typedef int8_t int8;
-typedef uint16_t uint16;
-typedef int16_t int16;
-typedef uint32_t uint32;
-typedef int32_t int32;
-typedef uint64_t uint64;
-typedef int64_t int64;
-
-typedef uint64_t mon_addr_t;
-
-#define VAL64(a) (a)
-#define UVAL64(a) (a)
-
-#if 0
 #ifndef SYSDEPS_H
 #define SYSDEPS_H
 
-#ifndef __STDC__
-#error "Your compiler is not ANSI. Get a real one."
-#endif
-
-#include "config.h"
-
-#ifndef STDC_HEADERS
-#error "You don't have ANSI C header files."
-#endif
-
-#ifdef HAVE_UNISTD_H
-# include <sys/types.h>
-# include <unistd.h>
-#endif
-
-#include <netinet/in.h>
+#include <stdint.h>
 #include <string.h>
-#include <errno.h>
+#include <unistd.h>
 
-/* Data types */
-
-#ifdef __BEOS__
-
-#include <support/ByteOrder.h>
-
-#else
-
-typedef unsigned char uint8;
-typedef signed char int8;
-#if SIZEOF_SHORT == 2
-typedef unsigned short uint16;
-typedef short int16;
-#elif SIZEOF_INT == 2
-typedef unsigned int uint16;
-typedef int int16;
-#else
-#error "No 2 byte type, you lose."
-#endif
-#if SIZEOF_INT == 4
-typedef unsigned int uint32;
-typedef int int32;
-#elif SIZEOF_LONG == 4
-typedef unsigned long uint32;
-typedef long int32;
-#else
-#error "No 4 byte type, you lose."
-#endif
-#if SIZEOF_LONG == 8
-typedef unsigned long uint64;
-typedef long int64;
-#define VAL64(a) (a ## l)
-#define UVAL64(a) (a ## ul)
-#elif SIZEOF_LONG_LONG == 8
-typedef unsigned long long uint64;
-typedef long long int64;
-#define VAL64(a) (a ## LL)
-#define UVAL64(a) (a ## uLL)
-#else
-#error "No 8 byte type, you lose."
-#endif
-#if SIZEOF_VOID_P == 4
-typedef uint32 uintptr;
-typedef int32 intptr;
-#elif SIZEOF_VOID_P == 8
-typedef uint64 uintptr;
-typedef int64 intptr;
-#else
-#error "Unsupported size of pointer"
-#endif
-
-#endif	// def __BEOS__
-
-#endif
+typedef uint32_t mon_addr_t;
 #endif

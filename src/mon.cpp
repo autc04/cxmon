@@ -62,8 +62,8 @@ BREAK_POINT_SET disabled_break_points;
 
 // Buffer we're operating on
 bool mon_use_real_mem = false;
-uint32 mon_mem_size;
-static uint8 *mem;
+uint32_t mon_mem_size;
+static uint8_t *mem;
 
 
 // Streams for input, output and error messages
@@ -78,7 +78,7 @@ char *mon_args_ptr;
 mon_addr_t mon_dot_address;
 
 // Current value of ':' in expression
-static uint32 colon_value;
+static uint32_t colon_value;
 
 
 // Scanner variables
@@ -206,47 +206,47 @@ bool mon_aborted()
  *  Access to buffer
  */
 
-uint32 (*mon_read_byte)(mon_addr_t adr);
+uint32_t (*mon_read_byte)(mon_addr_t adr);
 
-uint32 mon_read_byte_buffer(mon_addr_t adr)
+uint32_t mon_read_byte_buffer(mon_addr_t adr)
 {
 	return mem[adr % mon_mem_size];
 }
 
-uint32 mon_read_byte_real(mon_addr_t adr)
+uint32_t mon_read_byte_real(mon_addr_t adr)
 {
-	return *(uint8 *)adr;
+	return *(uint8_t *) (uintptr_t)adr;
 }
 
-void (*mon_write_byte)(mon_addr_t adr, uint32 b);
+void (*mon_write_byte)(mon_addr_t adr, uint32_t b);
 
-void mon_write_byte_buffer(mon_addr_t adr, uint32 b)
+void mon_write_byte_buffer(mon_addr_t adr, uint32_t b)
 {
 	mem[adr % mon_mem_size] = b;
 }
 
-void mon_write_byte_real(mon_addr_t adr, uint32 b)
+void mon_write_byte_real(mon_addr_t adr, uint32_t b)
 {
-	*(uint8 *)adr = b;
+	*(uint8_t *) (uintptr_t)adr = b;
 }
 
-uint32 mon_read_half(mon_addr_t adr)
+uint32_t mon_read_half(mon_addr_t adr)
 {
 	return (mon_read_byte(adr) << 8) | mon_read_byte(adr+1);
 }
 
-void mon_write_half(mon_addr_t adr, uint32 w)
+void mon_write_half(mon_addr_t adr, uint32_t w)
 {
 	mon_write_byte(adr, w >> 8);
 	mon_write_byte(adr+1, w);
 }
 
-uint32 mon_read_word(mon_addr_t adr)
+uint32_t mon_read_word(mon_addr_t adr)
 {
 	return (mon_read_byte(adr) << 24) | (mon_read_byte(adr+1) << 16) | (mon_read_byte(adr+2) << 8) | mon_read_byte(adr+3);
 }
 
-void mon_write_word(mon_addr_t adr, uint32 l)
+void mon_write_word(mon_addr_t adr, uint32_t l)
 {
 	mon_write_byte(adr, l >> 24);
 	mon_write_byte(adr+1, l >> 16);
@@ -449,7 +449,7 @@ static enum Token get_char_number(mon_addr_t &i)
 	while ((c = get_char()) != 0) {
 		if (c == '\'')
 			return T_NUMBER;
-		i = (i << 8) + (uint8)c;
+		i = (i << 8) + (uint8_t)c;
 	}
 
 	mon_error("Unterminated character constant");
@@ -817,7 +817,7 @@ static void set_var()
 		else {
 			var_map::const_iterator v = vars.begin(), end = vars.end();
 			for (v=vars.begin(); v!=end; ++v)
-				fprintf(monout, "%s = %08lx\n", v->first.c_str(), v->second);
+				fprintf(monout, "%s = %08lx\n", v->first.c_str(), (unsigned long)v->second);
 		}
 
 	} else if (mon_token == T_NAME) {
@@ -915,7 +915,7 @@ static void reallocate()
 		return;
 	}
 
-	if ((mem = (uint8 *)realloc(mem, size)) != NULL)
+	if ((mem = (uint8_t *)realloc(mem, size)) != NULL)
 		fprintf(monerr, "Buffer size: %08x bytes\n", mon_mem_size = size);
 	else
 		fprintf(monerr, "Unable to reallocate buffer\n");
@@ -943,8 +943,8 @@ static void apply(int size)
 		return;
 	}
 
-	uint32 (*read_func)(mon_addr_t adr);
-	void (*write_func)(mon_addr_t adr, uint32 val);
+	uint32_t (*read_func)(mon_addr_t adr);
+	void (*write_func)(mon_addr_t adr, uint32_t val);
 	switch (size) {
 		case 1:
 			read_func = mon_read_byte;
@@ -1228,7 +1228,7 @@ void mon(int argc, const char **argv)
 	// Allocate buffer
 	if (!mon_use_real_mem) {
 		mon_mem_size = 0x100000;
-		mem = (uint8 *)malloc(mon_mem_size);
+		mem = (uint8_t *)malloc(mon_mem_size);
 
 		// Print banner
 		if (interactive)
@@ -1255,7 +1255,7 @@ void mon(int argc, const char **argv)
 	while (!done) {
 		if (interactive) {
 			char prompt[16];
-			sprintf(prompt, "[%0*lx]-> ", int(2 * sizeof(mon_dot_address)), mon_dot_address);
+			sprintf(prompt, "[%0*lx]-> ", int(2 * sizeof(mon_dot_address)), (unsigned long)mon_dot_address);
 			read_line(prompt);
 			if (!input) {
 				done = true;

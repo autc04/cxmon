@@ -45,7 +45,7 @@ const char STR_DISABLED_BREAK_POINTS[]	= "Disabled Break Points:\n";
 enum Token {
 	T_NULL,		// Invalid token
 	T_END,		// End of line
-	T_NUMBER,	// Hexadecimal/decimal number (uint32)
+	T_NUMBER,	// Hexadecimal/decimal number (uint32_t)
 	T_STRING,	// String enclosed in ""
 	T_NAME,		// Variable name
 	T_DOT,		// '.'
@@ -80,7 +80,7 @@ extern FILE *monin, *monout, *monerr;
 extern mon_addr_t mon_dot_address;
 
 extern bool mon_use_real_mem;  // Flag: mon is using real memory
-extern uint32 mon_mem_size;    // Size of mon buffer (if mon_use_real_mem = false)
+extern uint32_t mon_mem_size;    // Size of mon buffer (if mon_use_real_mem = false)
 
 extern bool mon_macos_mode;    // Flag: enable features in the disassembler for working with MacOS code
 
@@ -98,12 +98,12 @@ extern bool mon_expression(mon_addr_t *number);  // Parse expression
 extern bool mon_aborted();                    // Check if Ctrl-C was pressed
 
 // Memory access
-extern uint32 (*mon_read_byte)(mon_addr_t adr);
-extern void (*mon_write_byte)(mon_addr_t adr, uint32 b);
-extern uint32 mon_read_half(mon_addr_t adr);
-extern void mon_write_half(mon_addr_t adr, uint32 w);
-extern uint32 mon_read_word(mon_addr_t adr);
-extern void mon_write_word(mon_addr_t adr, uint32 l);
+extern uint32_t (*mon_read_byte)(mon_addr_t adr);
+extern void (*mon_write_byte)(mon_addr_t adr, uint32_t b);
+extern uint32_t mon_read_half(mon_addr_t adr);
+extern void mon_write_half(mon_addr_t adr, uint32_t w);
+extern uint32_t mon_read_word(mon_addr_t adr);
+extern void mon_write_word(mon_addr_t adr, uint32_t l);
 
 // Check if break point is set
 #define IS_BREAK_POINT(address) (active_break_points.find(address) != active_break_points.end())

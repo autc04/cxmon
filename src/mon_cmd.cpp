@@ -41,7 +41,7 @@
  *  true: OK, false: Error
  */
 
-static bool range_args(mon_addr_t *adr, mon_addr_t *end_adr, uint32 def_range)
+static bool range_args(mon_addr_t *adr, mon_addr_t *end_adr, uint32_t def_range)
 {
 	*adr = mon_dot_address;
 	*end_adr = mon_dot_address + def_range;
@@ -68,7 +68,7 @@ static bool range_args(mon_addr_t *adr, mon_addr_t *end_adr, uint32 def_range)
  *  byte_string = (expression | STRING) {COMMA (expression | STRING)} END
  */
 
-static bool byte_string(uint8 *&str, mon_addr_t &len)
+static bool byte_string(uint8_t *&str, mon_addr_t &len)
 {
 	mon_addr_t value;
 
@@ -84,13 +84,13 @@ static bool byte_string(uint8 *&str, mon_addr_t &len)
 start:
 			if (mon_token == T_STRING) {
 				unsigned n = strlen(mon_string);
-				str = (uint8 *)realloc(str, (len + n - 1 + GRANULARITY) & ~(GRANULARITY - 1));
+				str = (uint8_t *)realloc(str, (len + n - 1 + GRANULARITY) & ~(GRANULARITY - 1));
 				assert(str != NULL);
 				memcpy(str + len, mon_string, n);
 				len += n;
 				mon_get_token();
 			} else if (mon_expression(&value)) {
-				str = (uint8 *)realloc(str, (len + GRANULARITY) & ~(GRANULARITY - 1));
+				str = (uint8_t *)realloc(str, (len + GRANULARITY) & ~(GRANULARITY - 1));
 				assert(str != NULL);
 				str[len] = value;
 				len++;
@@ -116,7 +116,7 @@ start:
  *  Convert character to printable character
  */
 
-static inline uint8 char2print(uint8 c)
+static inline uint8_t char2print(uint8_t c)
 {
 	return (c >= 0x20 && c <= 0x7e) ? c : '.';
 }
@@ -225,7 +225,7 @@ void shell_command(void)
 void memory_dump(void)
 {
 	mon_addr_t adr, end_adr;
-	uint8 mem[MEMDUMP_BPL + 1];
+	uint8_t mem[MEMDUMP_BPL + 1];
 
 	mem[MEMDUMP_BPL] = 0;
 
@@ -233,7 +233,7 @@ void memory_dump(void)
 		return;
 
 	while (adr <= end_adr && !mon_aborted()) {
-		fprintf(monout, "%0*lx:", int(2 * sizeof(adr)), mon_use_real_mem ? adr: adr % mon_mem_size);
+		fprintf(monout, "%0*lx:", int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? adr: adr % mon_mem_size));
 		for (int i=0; i<MEMDUMP_BPL; i++, adr++) {
 			if (i % 4 == 0)
 				fprintf(monout, " %08x", mon_read_word(adr));
@@ -256,7 +256,7 @@ void memory_dump(void)
 void ascii_dump(void)
 {
 	mon_addr_t adr, end_adr;
-	uint8 str[ASCIIDUMP_BPL + 1];
+	uint8_t str[ASCIIDUMP_BPL + 1];
 
 	str[ASCIIDUMP_BPL] = 0;
 
@@ -264,7 +264,7 @@ void ascii_dump(void)
 		return;
 
 	while (adr <= end_adr && !mon_aborted()) {
-		fprintf(monout, "%0*lx:", int(2 * sizeof(adr)), mon_use_real_mem ? adr : adr % mon_mem_size);
+		fprintf(monout, "%0*lx:", int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? adr : adr % mon_mem_size));
 		for (int i=0; i<ASCIIDUMP_BPL; i++, adr++)
 			str[i] = char2print(mon_read_byte(adr));
 		fprintf(monout, " '%s'\n", str);
@@ -282,7 +282,7 @@ void ascii_dump(void)
 void binary_dump(void)
 {
 	mon_addr_t adr, end_adr;
-	uint8 str[9];
+	uint8_t str[9];
 
 	str[8] = 0;
 
@@ -290,8 +290,8 @@ void binary_dump(void)
 		return;
 
 	while (adr <= end_adr && !mon_aborted()) {
-		fprintf(monout, "%0*lx:", int(2 * sizeof(adr)), mon_use_real_mem ? adr : adr % mon_mem_size);
-		uint8 b = mon_read_byte(adr);
+		fprintf(monout, "%0*lx:", int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? adr : adr % mon_mem_size));
+		uint8_t b = mon_read_byte(adr);
 		for (int m=0x80, i=0; i<8; m>>=1, i++)
 			str[i] = (b & m) ? '*' : '.';
 		fprintf(monout, " '%s'\n", str);
@@ -363,7 +363,7 @@ void break_point_remove(void)
 	BREAK_POINT_SET::iterator it = active_break_points.begin();
 	std::advance(it, index - 1);
 	// Remove break point
-	printf("Removed break point %4x at address %08lx\n", index, *it);
+	printf("Removed break point %4x at address %08lx\n", index, (unsigned long)*it);
 	active_break_points.erase(it);
 }
 
@@ -389,7 +389,7 @@ void break_point_disable(void)
 	BREAK_POINT_SET::iterator it = active_break_points.begin();
 	std::advance(it, index - 1);
 	// Add to disable break points
-	printf("Disabled break point %4x at address %08lx\n", index, *it);
+	printf("Disabled break point %4x at address %08lx\n", index, (unsigned long)*it);
 	disabled_break_points.insert(*it);
 	// Remove break point
 	active_break_points.erase(it);
@@ -416,7 +416,7 @@ void break_point_enable(void)
 	BREAK_POINT_SET::iterator it = disabled_break_points.begin();
 	std::advance(it, index - 1);
 	// Add to active break points
-	printf("Disabled break point %4x at address %08lx\n", index, *it);
+	printf("Disabled break point %4x at address %08lx\n", index, (unsigned long)*it);
 	active_break_points.insert(*it);
 	// Remove break point
 	disabled_break_points.erase(it);
@@ -439,7 +439,7 @@ void break_point_info(void)
 		int pos = 1;
 		printf(STR_ACTIVE_BREAK_POINTS);
 		for (it = active_break_points.begin(); it != active_break_points.end(); it++)
-			printf("\tBreak point %4x at address %08lx\n", pos++, *it);
+			printf("\tBreak point %4x at address %08lx\n", pos++, (unsigned long)*it);
 	}
 
 	if (!disabled_break_points.empty()) {
@@ -447,7 +447,7 @@ void break_point_info(void)
 		printf(STR_DISABLED_BREAK_POINTS);
 		int pos = 1;
 		for (it = disabled_break_points.begin(); it != disabled_break_points.end(); it++)
-			printf("\tBreak point %4x at address %08lx\n", pos++, *it);
+			printf("\tBreak point %4x at address %08lx\n", pos++, (unsigned long)*it);
 	}
 }
 
@@ -545,8 +545,8 @@ static void disassemble(CPUType type)
 	switch (type) {
 		case CPU_PPC:
 			while (adr <= end_adr && !mon_aborted()) {
-				uint32 w = mon_read_word(adr);
-				fprintf(monout, "%0*lx: %08x\t", int(2 * sizeof(adr)), mon_use_real_mem ? adr : adr % mon_mem_size, w);
+				uint32_t w = mon_read_word(adr);
+				fprintf(monout, "%0*lx: %08x\t", int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? adr : adr % mon_mem_size, w));
 				disass_ppc(monout, mon_use_real_mem ? adr : adr % mon_mem_size, w);
 				adr += 4;
 			}
@@ -554,45 +554,45 @@ static void disassemble(CPUType type)
 
 		case CPU_6502:
 			while (adr <= end_adr && !mon_aborted()) {
-				uint8 op = mon_read_byte(adr);
-				uint8 lo = mon_read_byte(adr + 1);
-				uint8 hi = mon_read_byte(adr + 2);
-				fprintf(monout, "%0*lx: ", int(2 * sizeof(adr)), mon_use_real_mem ? adr : adr % mon_mem_size);
+				uint8_t op = mon_read_byte(adr);
+				uint8_t lo = mon_read_byte(adr + 1);
+				uint8_t hi = mon_read_byte(adr + 2);
+				fprintf(monout, "%0*lx: ", int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? adr : adr % mon_mem_size));
 				adr += disass_6502(monout, mon_use_real_mem ? adr : adr % mon_mem_size, op, lo, hi);
 			}
 			break;
 
 		case CPU_680x0:
 			while (adr <= end_adr && !mon_aborted()) {
-				fprintf(monout, "%0*lx: ", int(2 * sizeof(adr)), mon_use_real_mem ? adr : adr % mon_mem_size);
+				fprintf(monout, "%0*lx: ", int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? adr : adr % mon_mem_size));
 				adr += disass_68k(monout, mon_use_real_mem ? adr : adr % mon_mem_size);
 			}
 			break;
 
 		case CPU_Z80:
 			while (adr <= end_adr && !mon_aborted()) {
-				fprintf(monout, "%0*lx: ", int(2 * sizeof(adr)), mon_use_real_mem ? adr : adr % mon_mem_size);
+				fprintf(monout, "%0*lx: ", int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? adr : adr % mon_mem_size));
 				adr += disass_z80(monout, mon_use_real_mem ? adr : adr % mon_mem_size);
 			}
 			break;
 
 		case CPU_x86_64:
 			while (adr <= end_adr && !mon_aborted()) {
-				fprintf(monout, "%0*lx: ", int(2 * sizeof(adr)), mon_use_real_mem ? adr : adr % mon_mem_size);
+				fprintf(monout, "%0*lx: ", int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? adr : adr % mon_mem_size));
 				adr += disass_x86(monout, mon_use_real_mem ? adr : adr % mon_mem_size, 64);
 			}
 			break;
 
 		case CPU_80x86_32:
 			while (adr <= end_adr && !mon_aborted()) {
-				fprintf(monout, "%0*lx: ", int(2 * sizeof(adr)), mon_use_real_mem ? adr : adr % mon_mem_size);
+				fprintf(monout, "%0*lx: ", int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? adr : adr % mon_mem_size));
 				adr += disass_x86(monout, mon_use_real_mem ? adr : adr % mon_mem_size, 32);
 			}
 			break;
 
 		case CPU_80x86_16:
 			while (adr <= end_adr && !mon_aborted()) {
-				fprintf(monout, "%0*lx: ", int(2 * sizeof(adr)), mon_use_real_mem ? adr : adr % mon_mem_size);
+				fprintf(monout, "%0*lx: ", int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? adr : adr % mon_mem_size));
 				adr += disass_x86(monout, mon_use_real_mem ? adr : adr % mon_mem_size, 16);
 			}
 	}
@@ -644,7 +644,7 @@ void disassemble_x86_64(void)
 void modify(void)
 {
 	mon_addr_t adr, len, src_adr = 0;
-	uint8 *str;
+	uint8_t *str;
 
 	if (!mon_expression(&adr))
 		return;
@@ -667,7 +667,7 @@ void modify(void)
 void fill(void)
 {
 	mon_addr_t adr, end_adr, len, src_adr = 0;
-	uint8 *str;
+	uint8_t *str;
 
 	if (!mon_expression(&adr))
 		return;
@@ -740,7 +740,7 @@ void compare(void)
 
 	while (adr <= end_adr && !mon_aborted()) {
 		if (mon_read_byte(adr) != mon_read_byte(dest)) {
-			fprintf(monout, "%0*lx ", int(2 * sizeof(adr)), mon_use_real_mem ? adr : adr % mon_mem_size);
+			fprintf(monout, "%0*lx ", int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? adr : adr % mon_mem_size));
 			num++;
 			if (!(num & 7))
 				fputc('\n', monout);
@@ -762,7 +762,7 @@ void compare(void)
 void hunt(void)
 {
 	mon_addr_t adr, end_adr, len;
-	uint8 *str;
+	uint8_t *str;
 	int num = 0;
 
 	if (!mon_expression(&adr))
@@ -773,14 +773,14 @@ void hunt(void)
 		return;
 
 	while ((adr+len-1) <= end_adr && !mon_aborted()) {
-		uint32 i;
+		uint32_t i;
 
 		for (i=0; i<len; i++)
 			if (mon_read_byte(adr + i) != str[i])
 				break;
 
 		if (i == len) {
-			fprintf(monout, "%0*lx ", int(2 * sizeof(adr)), mon_use_real_mem ? adr : adr % mon_mem_size);
+			fprintf(monout, "%0*lx ", int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? adr : adr % mon_mem_size));
 			num++;
 			if (num == 1)
 				mon_dot_address = adr;
@@ -834,7 +834,9 @@ void load_data(void)
 			mon_write_byte(adr++, fc);
 		fclose(file);
 
-		fprintf(monerr, "%08x bytes read from %0*lx to %0*lx\n", adr - start_adr, int(2 * sizeof(adr)), mon_use_real_mem ? start_adr : start_adr % mon_mem_size, int(2 * sizeof(adr)), mon_use_real_mem ? adr-1 : (adr-1) % mon_mem_size);
+		fprintf(monerr, "%08x bytes read from %0*lx to %0*lx\n", adr - start_adr,
+			int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? start_adr : start_adr % mon_mem_size),
+			int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? adr-1 : (adr-1) % mon_mem_size));
 		mon_dot_address = adr;
 	}
 }
@@ -877,6 +879,8 @@ void save_data(void)
 			fputc(mon_read_byte(adr++), file);
 		fclose(file);
 
-		fprintf(monerr, "%08x bytes written from %0*lx to %0*lx\n", size, int(2 * sizeof(adr)), mon_use_real_mem ? start_adr : start_adr % mon_mem_size, int(2 * sizeof(adr)), mon_use_real_mem ? end_adr : end_adr % mon_mem_size);
+		fprintf(monerr, "%08x bytes written from %0*lx to %0*lx\n", size, 
+			int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? start_adr : start_adr % mon_mem_size),
+			int(2 * sizeof(adr)), (unsigned long)(mon_use_real_mem ? end_adr : end_adr % mon_mem_size));
 	}
 }
