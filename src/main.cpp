@@ -112,7 +112,7 @@ int main(int argc, char **argv)
 
 	// Execute mon
 	mon_init();
-	mon(argc, argv);
+	mon(argc, (const char**)argv);
 	mon_exit();
 	return 0;
 }
