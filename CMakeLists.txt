@@ -24,7 +24,7 @@ add_library(mon
     src/disass/m68k.h
     src/disass/opintl.h
     )
-
+target_include_directories(mon PUBLIC include)
 
 find_path(Readline_INCLUDE_DIR NAMES readline/readline.h)
 find_library(Readline_LIBRARY NAMES readline)
