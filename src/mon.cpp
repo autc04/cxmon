@@ -106,6 +106,7 @@ static char *cmd_help;  // Help text for commands
 typedef std::map<std::string, mon_addr_t> var_map;
 static var_map vars;
 
+bool mon_exit_requested = false;
 
 // Prototypes
 static void init_abort();
@@ -1185,7 +1186,7 @@ void mon_exit()
 
 void mon(int argc, const char **argv)
 {
-	bool done = false, interactive = true;
+	bool interactive = true;
 
 	// Setup input/output streams
 	monin = stdin;
@@ -1240,7 +1241,7 @@ void mon(int argc, const char **argv)
 	}
 
 	// Clear variables
-	vars.clear();
+	//vars.clear();
 
 	// In MacOS mode, pull in the lowmem globals as variables
 	if (mon_macos_mode) {
@@ -1255,18 +1256,19 @@ void mon(int argc, const char **argv)
 
 	// Read and parse command line
 	char *cmd = NULL;
-	while (!done) {
+	mon_exit_requested = false;
+	while (!mon_exit_requested) {
 		if (interactive) {
 			char prompt[16];
 			sprintf(prompt, "[%0*lx]-> ", int(2 * sizeof(mon_dot_address)), (unsigned long)mon_dot_address);
 			read_line(prompt);
 			if (!input) {
-				done = true;
+				mon_exit_requested = true;
 				continue;
 			}
 		} else {
 			if (argc == 0) {
-				done = true;
+				mon_exit_requested = true;
 				break;
 			} else {
 				unsigned n = strlen(argv[0]) + 1;
@@ -1295,9 +1297,10 @@ void mon(int argc, const char **argv)
 		memcpy(cmd, p, n);
 		cmd[n] = 0;
 
+		mon_exit_requested = false;
 		// Execute command
 		if (strcmp(cmd, "x") == 0) {	// Exit
-			done = true;
+			mon_exit_requested = true;
 			continue;
 		}
 		for (int i=0; i<num_cmds; i++) {

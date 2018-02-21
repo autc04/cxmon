@@ -86,6 +86,8 @@ extern uint32_t mon_mem_size;    // Size of mon buffer (if mon_use_real_mem = fa
 
 extern bool mon_macos_mode;    // Flag: enable features in the disassembler for working with MacOS code
 
+extern bool mon_exit_requested;
+
 typedef std::set<mon_addr_t> BREAK_POINT_SET;
 extern BREAK_POINT_SET active_break_points;
 extern BREAK_POINT_SET disabled_break_points;
