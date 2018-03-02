@@ -464,7 +464,6 @@ print_insn_arg (d, buffer, p0, addr, info)
   register CONST char *regname;
   register unsigned char *p1;
   double flval;
-  int flt_p;
   bfd_signed_vma disp;
   unsigned int uval;
 
@@ -1130,7 +1129,6 @@ print_indexed (basereg, p, addr, info)
   bfd_vma base_disp;
   bfd_vma outer_disp;
   char buf[40];
-  char vmabuf[50];
 
   word = NEXTWORD (p);
 

@@ -1836,7 +1836,7 @@ static bfd_vma start_pc;
  * The function returns the length of this instruction in bytes.
  */
 
-static char intel_syntax;
+static signed char intel_syntax;
 static char open_char;
 static char close_char;
 static char separator_char;
@@ -2861,32 +2861,32 @@ append_seg ()
   if (prefixes & PREFIX_CS)
     {
       used_prefixes |= PREFIX_CS;
-      oappend ("%cs:" + intel_syntax);
+      oappend (&"%cs:"[intel_syntax]);
     }
   if (prefixes & PREFIX_DS)
     {
       used_prefixes |= PREFIX_DS;
-      oappend ("%ds:" + intel_syntax);
+      oappend (&"%ds:"[intel_syntax]);
     }
   if (prefixes & PREFIX_SS)
     {
       used_prefixes |= PREFIX_SS;
-      oappend ("%ss:" + intel_syntax);
+      oappend (&"%ss:"[intel_syntax]);
     }
   if (prefixes & PREFIX_ES)
     {
       used_prefixes |= PREFIX_ES;
-      oappend ("%es:" + intel_syntax);
+      oappend (&"%es:"[intel_syntax]);
     }
   if (prefixes & PREFIX_FS)
     {
       used_prefixes |= PREFIX_FS;
-      oappend ("%fs:" + intel_syntax);
+      oappend (&"%fs:"[intel_syntax]);
     }
   if (prefixes & PREFIX_GS)
     {
       used_prefixes |= PREFIX_GS;
-      oappend ("%gs:" + intel_syntax);
+      oappend (&"%gs:"[intel_syntax]);
     }
 }
 
@@ -3804,7 +3804,7 @@ OP_ESreg (code, sizeflag)
      int code;
      int sizeflag;
 {
-  oappend ("%es:" + intel_syntax);
+  oappend (&"%es:"[intel_syntax]);
   ptr_reg (code, sizeflag);
 }
 
