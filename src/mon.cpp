@@ -168,6 +168,7 @@ void mon_error(const char *s)
 
 static bool was_aborted;
 static struct sigaction my_sa;
+static struct sigaction old_sa;
 
 #ifdef __BEOS__
 static void handle_abort(int sig, void *arg, vregs *r)
@@ -189,13 +190,12 @@ static void init_abort()
 	my_sa.sa_handler = handle_abort;
 #endif
 	my_sa.sa_flags = 0;
-	sigaction(SIGINT, &my_sa, NULL);
+	sigaction(SIGINT, &my_sa, &old_sa);
 }
 
 static void exit_abort()
 {
-	my_sa.sa_handler = SIG_DFL;
-	sigaction(SIGINT, &my_sa, NULL);
+	sigaction(SIGINT, &old_sa, NULL);
 }
 
 bool mon_aborted()
