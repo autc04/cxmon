@@ -26,17 +26,19 @@ add_library(mon
     )
 target_include_directories(mon PUBLIC include)
 
-find_path(Readline_INCLUDE_DIR NAMES readline/readline.h)
-find_library(Readline_LIBRARY NAMES readline)
 target_compile_definitions(mon PRIVATE NO_AUTOCONF)
+if(NOT WIN32)
+    find_path(Readline_INCLUDE_DIR NAMES readline/readline.h)
+    find_library(Readline_LIBRARY NAMES readline)
 
-if(Readline_INCLUDE_DIR AND Readline_LIBRARY)
-    target_compile_definitions(mon PRIVATE
-        HAVE_LIBREADLINE
-        HAVE_READLINE_READLINE_H
-        HAVE_READLINE_HISTORY_H)
-    target_include_directories(mon PRIVATE ${Readline_INCLUDE_DIR})
-    target_link_libraries(mon ${Readline_LIBRARY})
+    if(Readline_INCLUDE_DIR AND Readline_LIBRARY)
+        target_compile_definitions(mon PRIVATE
+            HAVE_LIBREADLINE
+            HAVE_READLINE_READLINE_H
+            HAVE_READLINE_HISTORY_H)
+        target_include_directories(mon PRIVATE ${Readline_INCLUDE_DIR})
+        target_link_libraries(mon ${Readline_LIBRARY})
+    endif()
 endif()
 
 add_executable(cxmon
