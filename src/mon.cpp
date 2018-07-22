@@ -25,7 +25,9 @@
 #include <string>
 #include <map>
 #include <sstream>
+#ifndef WIN32
 #include <unistd.h>
+#endif
 
 #ifndef NO_AUTOCONF
 #include "config.h"
@@ -166,6 +168,19 @@ void mon_error(const char *s)
  *  CTRL-C pressed?
  */
 
+#ifdef WIN32
+static void init_abort()
+{
+}
+static void exit_abort()
+{
+}
+
+bool mon_aborted()
+{
+	return false;
+}
+#else
 static bool was_aborted;
 static struct sigaction my_sa;
 static struct sigaction old_sa;
@@ -204,7 +219,7 @@ bool mon_aborted()
 	was_aborted = false;
 	return ret;
 }
-
+#endif
 
 /*
  *  Access to buffer
