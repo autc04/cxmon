@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <ctype.h>
+#include <string.h>
 #include <string>
 #include <map>
 #include <sstream>
