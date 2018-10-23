@@ -1033,7 +1033,7 @@ static void mon_exec()
 /*
  *  Change current directory
  */
-
+#ifndef WIN32
 void mon_change_dir()
 {
 	in_ptr = input;
@@ -1048,7 +1048,7 @@ void mon_change_dir()
 	if (chdir(in_ptr) != 0)
 		mon_error("Cannot change directory");
 }
-
+#endif
 
 /*
  * Add break point
@@ -1152,7 +1152,9 @@ void mon_init()
 	mon_add_command("rm", mon_exec,					"rm [args]                Remove file(s)\n");
 	mon_add_command("cp", mon_exec,					"cp [args]                Copy file(s)\n");
 	mon_add_command("mv", mon_exec,					"mv [args]                Move file(s)\n");
+#ifndef WIN32
 	mon_add_command("cd", mon_change_dir,			"cd directory             Change current directory\n");
+#endif
 	mon_add_command("o", redir_output,				"o [\"file\"]               Redirect output\n");
 	mon_add_command("[", load_data,					"[ start \"file\"           Load data from file\n");
 	mon_add_command("]", save_data,					"] start size \"file\"      Save data to file\n");
