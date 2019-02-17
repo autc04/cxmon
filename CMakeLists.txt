@@ -24,7 +24,7 @@ add_library(mon
     src/disass/m68k.h
     src/disass/opintl.h
     )
-target_include_directories(mon PUBLIC include)
+target_include_directories(mon PUBLIC src)
 
 target_compile_definitions(mon PRIVATE NO_AUTOCONF)
 if(NOT WIN32)
