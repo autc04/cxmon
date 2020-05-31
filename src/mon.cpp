@@ -1214,7 +1214,10 @@ void mon(int argc, const char **argv)
 	// Make argc/argv point to the actual arguments
 	const char *prg_name = argv[0];
 	if (argc)
-		argc--; argv++;
+	{
+		argc--;
+		argv++;
+	}
 
 	// Parse arguments
 	mon_macos_mode = false;
